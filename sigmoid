@@ -1,4 +1,5 @@
 desc:SigmaComp
+//author: Evan Moring
 
 slider1:threshold_db=0<-150,12,1>threshold (dB)
 slider2:ceiling_db=0<-150,12,1>ceiling (dB)
@@ -20,9 +21,7 @@ function sigmoid(orig, threshold, ceiling, diff)
   new_spl > threshold ? (
     new_spl -= threshold ;
     new_spl = new_spl / diff;
-    show_me_before = new_spl;
     new_spl = (1 / (1 + exp(-1 * new_spl)));
-    show_me = new_spl;
     new_spl -= .5;
     new_spl *= (diff * 2);
     new_spl += threshold;
