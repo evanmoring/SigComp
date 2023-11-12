@@ -1,0 +1,48 @@
+desc:SigmaComp
+
+slider1:threshold_db=0<-150,12,1>threshold (dB)
+slider2:ceiling_db=0<-150,12,1>ceiling (dB)
+slider3:makeup_db=0:5<-150,12,1>makeup gain (dB)
+
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+@init
+threshold = 1;
+ceiling = 1;
+makeup = 1;
+function sigmoid(orig, threshold, ceiling, diff)
+(
+  s = sign(orig);
+  new_spl = abs(orig);  
+  new_spl > threshold ? (
+    new_spl -= threshold ;
+    new_spl = new_spl / diff;
+    show_me_before = new_spl;
+    new_spl = (1 / (1 + exp(-1 * new_spl)));
+    show_me = new_spl;
+    new_spl -= .5;
+    new_spl *= (diff * 2);
+    new_spl += threshold;
+  );
+  new_spl *= s;
+  new_spl;
+);
+
+@slider
+next_gain=10^(gain_db/20);
+threshold=10^(threshold_db/20);
+ceiling=10^(ceiling_db/20);
+makeup=10^(makeup_db/20);
+diff = ceiling - threshold;
+center = diff * 3 / 2;
+
+@sample
+sigm = sigmoid(spl1, threshold, ceiling, diff);
+spl1 = sigm;
+sigm0 = sigmoid(spl0, threshold, ceiling, diff);
+spl0 = sigm0;
+spl0 *= makeup;
+spl1 *= makeup;
